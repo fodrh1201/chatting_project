@@ -20,7 +20,6 @@ int name_len;
 
 int main(int argc, char* argv[]) {
 	int i;
-	int sock;
 	struct sockaddr_in serv_adr;
 
 	pthread_t tid[2];
