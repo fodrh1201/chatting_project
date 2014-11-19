@@ -72,7 +72,9 @@ void *thread_read(void *arg) {
 
 	while (strcmp(buf, "exit")) {
 		read_cnt = 0;
-		read(sock, (char*)&recv_len, 1);
+		recv_len = 0;
+		int len = read(sock, (char*)&recv_len, 1);
+		printf("len : %d, recv_len : %d \n", len, recv_len);
 		while(recv_len) {
 			read_cnt = read(sock, buf + read_len, BUF_SIZE);
 			if (read_cnt = -1)

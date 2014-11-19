@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 	int serv_sock, clnt_sock;
 	struct sockaddr_in serv_adr, clnt_adr;
 	socklen_t adr_sz;
-	int recv_len, recv_cnt, write_len, i;
+	int read_len, recv_len, recv_cnt, write_len, i;
 	char buf[BUF_SIZE];
 
 	struct epoll_event* ep_events;
@@ -68,19 +68,26 @@ int main(int argc, char* argv[]) {
 				if ((ep_events[i].events & EPOLLIN) == EPOLLIN) {
 					recv_len = 0;
 					recv_cnt = 0;
-					while ((recv_cnt = read(ep_events[i].data.fd, buf + recv_len, BUF_SIZE)) != 0) {
-						if (recv_cnt == -1) 
+					read_len = 0;
+		
+					read(ep_events[i].data.fd, (char*)&recv_len, 1);
+
+					while (recv_len) {
+						recv_cnt = read(ep_events[i].data.fd, buf + read_len, BUF_SIZE);
+						if (recv_cnt == -1)
 							error_handling("read() error!");
-	
-						recv_len += recv_cnt;
+						read_len += recv_cnt;
+						recv_len -= recv_cnt;
 					}
 					if (recv_len == 0) {
 						epoll_ctl(epfd, EPOLL_CTL_DEL, ep_events[i].data.fd, NULL);
 						close(ep_events[i].data.fd);
 						printf("closed client : %d \n", ep_events[i].data.fd);
 					}
-					else 
-						write_len = write_to_all(epfd, ep_events, event_cnt, buf, recv_len);
+					else
+						write_len = write_to_all(epfd, ep_events, event_cnt, buf,  read_len);
+					if (write_len != read_len)
+						error_handling("total writeing() error!");
 				}
 			}
 		}
@@ -119,6 +126,7 @@ int write_to_all(int epfd, struct epoll_event* ep_events, int event_cnt, char* b
 				error_handling("total write() error!");
 		}
 	}
+	return write_len;
 }
 
 
