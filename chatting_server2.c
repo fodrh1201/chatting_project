@@ -77,9 +77,7 @@ int main(int argc, char* argv[]) {
 				printf("connected client : %d\n", clnt_sock);
 			}
 			else {
-				printf("I don't know why It doesn't work at all!!\n");
 				read(fd, (char*)&u_len, 4);
-				printf("u_len : %d\n", u_len);
 				read_len = 0;
 				read_cnt = 0;
 				while (read_len < u_len) {
@@ -87,7 +85,6 @@ int main(int argc, char* argv[]) {
 					if (read_cnt == -1)
 						error_handling("read name error!");
 					read_len += read_cnt;
-					printf("read_cnt : %d\n", read_cnt);
 				}
 
 				if (u_len != read_len)
@@ -95,8 +92,6 @@ int main(int argc, char* argv[]) {
 				user_name[u_len] = '\0';
 
 				read(fd, (char*)&t_len, 4);
-				printf("%s\n", user_name);
-				printf("t_len : %d\n", t_len);
 				read_len = 0;
 				read_cnt = 0;
 				while (read_len < t_len) {
@@ -116,8 +111,7 @@ int main(int argc, char* argv[]) {
 					printf("%s > %s \n", user_name, message);
 					write_len = write_to_all(clnt_list, u_len, user_name, t_len, message);
 				}
-				printf("write_len : %d, u_len : %d, t_len : %d\n", write_len, u_len, t_len);	
-				if (write_len != u_len + t_len + 2)
+				if (write_len != u_len + t_len + 5)
 					error_handling("total write() error!");
 			}
 		}
@@ -142,7 +136,6 @@ int write_to_all(int* clnt_list, int u_len, char* user_name, int t_len, char* me
 		if (clnt_list[i] == 1) {
 			int temp = (char)u_len;
 			total_len = write(i, (char*)&temp, 1);
-			printf("%s user_name , disc : %d\n", user_name, i);	
 			write_len = 0;
 			while (write_len < u_len) {
 				write_cnt = write(i, user_name + write_len, 1);
@@ -153,7 +146,6 @@ int write_to_all(int* clnt_list, int u_len, char* user_name, int t_len, char* me
 
 			if (write_len != u_len)
 				error_handling("write() name error!");
-			printf("u_len : %d, write_len : %d\n", u_len, write_len);
 			total_len += write_len;
 			total_len += write(i, (char*)&t_len, 4);
 
@@ -168,7 +160,6 @@ int write_to_all(int* clnt_list, int u_len, char* user_name, int t_len, char* me
 			if (write_len != t_len)
 				error_handling("write() message error!");
 			total_len += write_len;
-			printf("t_len : %d, write_len : %d, total_len : %d\n", t_len, write_len, total_len);
 		}
 	}
 	return total_len;

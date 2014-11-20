@@ -91,7 +91,7 @@ void *thread_read(void *arg) {
 			read_len += read_cnt;
 		}
 
-		read(sock, (char*)&t_len, 1);
+		read(sock, (char*)&t_len, 4);
 		read_len = 0;
 		while (read_len < t_len) {
 			read_cnt = read(sock, message + read_len, 1);
@@ -117,7 +117,6 @@ void *thread_write(void *arg) {
 		fgets(buf, BUF_SIZE, stdin);
 		t_len = (int)strlen(buf);
 		
-		printf("%d, %d\n", name_len, t_len);
 		write_len = 0;
 		write_cnt = 0;
 		while (write_len < name_len) {
