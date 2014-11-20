@@ -21,6 +21,7 @@ int name_len;
 int main(int argc, char* argv[]) {
 	int i;
 	struct sockaddr_in serv_adr;
+	int status;
 
 	pthread_t tid[2];
 	int tret;
@@ -61,9 +62,11 @@ int main(int argc, char* argv[]) {
 		error_handling("read_thread() create error!");
 
 	for (i = 0; i < 2; i++) {
-		tret = pthread_join(tid[i], 0);
+		tret = pthread_join(tid[i], (void*)&status);
 		if (tret != 0)
 			error_handling("join error!");
+		if (status == 1)
+			return;
 	}
 
 	free(name);
@@ -85,7 +88,7 @@ void *thread_read(void *arg) {
 		read(sock, (char*)&u_len, 1);
 		read_len = 0;
 		while (read_len < u_len) {
-			read_cnt = read(sock, user_name + read_len, 1);
+			read_cnt = read(sock, user_name + read_len, u_len - read_len);
 			if (read_cnt == -1)
 				error_handling("name read() error!");
 			read_len += read_cnt;
@@ -95,7 +98,7 @@ void *thread_read(void *arg) {
 		read(sock, (char*)&t_len, 4);
 		read_len = 0;
 		while (read_len < t_len) {
-			read_cnt = read(sock, message + read_len, 1);
+			read_cnt = read(sock, message + read_len, t_len - read_len);
 			if (read_cnt == -1)
 				error_handling("message read() error!");
 			read_len += read_cnt;
@@ -110,6 +113,7 @@ void *thread_read(void *arg) {
 void *thread_write(void *arg) {
 	char buf[BUF_SIZE];
 	int t_len;
+	int ret;
 	
 	int write_cnt, write_len;
 	
@@ -123,7 +127,7 @@ void *thread_write(void *arg) {
 		write_len = 0;
 		write_cnt = 0;
 		while (write_len < name_len) {
-			write_cnt = write(sock, name + write_len, 1);
+			write_cnt = write(sock, name + write_len, name_len - write_len);
 			if (write_cnt == -1)
 				error_handling("wirte name error!");
 			write_len += write_cnt;
@@ -133,10 +137,16 @@ void *thread_write(void *arg) {
 		write_len = 0;
 		write_cnt = 0;
 		while (write_len < t_len) {
-			write_cnt = write(sock, buf + write_len, 1);
+			write_cnt = write(sock, buf + write_len, t_len - write_len);
 			if (write_cnt == -1)
 				error_handling("write text error!");
 			write_len += write_cnt;
+		}
+
+
+		if (!strcmp(buf, "exit\n")) {
+			ret = 1;
+			pthread_exit((void*) ret);
 		}
 	}
 	pthread_exit((void*) NULL);

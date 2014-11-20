@@ -101,17 +101,26 @@ int main(int argc, char* argv[]) {
 					read_len += read_cnt;
 				}
 				message[read_len] = '\0';
+
 				if (!strcmp(message, "exit\n")) {
+					strcpy(message, "exit from this room.\n");
+					
+					printf("test : %s, length : %d\n", message, (int)strlen(message));
+
+					t_len = strlen(message);
+
 					epoll_ctl(epfd, EPOLL_CTL_DEL, ep_events[i].data.fd, NULL);
 					clnt_list[ep_events[i].data.fd] = 0;
 					close(ep_events[i].data.fd);
 					printf("closed client : %d\n", ep_events[i].data.fd);
+					write_len = write_to_all(clnt_list, u_len, user_name, t_len, message);
 				}
 				else {
 					printf("%s > %s", user_name, message);
 					write_len = write_to_all(clnt_list, u_len, user_name, t_len, message);
 				}
-				if (write_len != u_len + t_len + 5)
+
+				if (write_len != u_len + t_len + 5 && write_len != 0)
 					error_handling("total write() error!");
 			}
 		}
@@ -131,14 +140,14 @@ int write_to_all(int* clnt_list, int u_len, char* user_name, int t_len, char* me
 	int i;
 	int total_len;
 	int write_len, write_cnt;
-
+	total_len = 0;
 	for (i = 0; i < MAX_NUM; i++) {
 		if (clnt_list[i] == 1) {
 			int temp = (char)u_len;
 			total_len = write(i, (char*)&temp, 1);
 			write_len = 0;
 			while (write_len < u_len) {
-				write_cnt = write(i, user_name + write_len, 1);
+				write_cnt = write(i, user_name + write_len, u_len - write_len);
 				if (write_cnt == -1)
 					error_handling("write() error!");
 				write_len += write_cnt;
@@ -151,7 +160,7 @@ int write_to_all(int* clnt_list, int u_len, char* user_name, int t_len, char* me
 
 			write_len = 0;
 			while (write_len <t_len) {
-				write_cnt = write(i, message + write_len, 1);
+				write_cnt = write(i, message + write_len, t_len - write_len);
 				if (write_cnt == -1)
 					error_handling("write() error2!");
 				write_len += write_cnt;
