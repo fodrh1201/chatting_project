@@ -19,9 +19,9 @@ int main(int argc, char* argv[]) {
 	int serv_sock, clnt_sock;
 	struct sockaddr_in serv_adr, clnt_adr;
 	socklen_t adr_sz;
-	char user_name[NAME_SIZE];
-	char message[BUF_SIZE];
-	int clnt_list[MAX_NUM];
+	char* user_name = (char*)malloc(NAME_SIZE);
+	char* message = (char*)malloc(BUF_SIZE);
+	int* clnt_list = (int*)malloc(MAX_NUM);
 //	char* name_list[MAX_NUM];
 
 	int i;
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 	struct epoll_event event;
 	int epfd, event_cnt;
 
-	memset(clnt_list, 0, MAX_NUM);
+	memset(clnt_list, 0, sizeof(int)*MAX_NUM);
 
 	if (argc != 2) {
 		printf("Usage: %s <port>\n", argv[0]);
@@ -66,7 +66,8 @@ int main(int argc, char* argv[]) {
 			error_handling("epoll_wait() error!");
 
 		for (i = 0; i < event_cnt; i++) {
-			if (ep_events[i].data.fd == serv_sock) {
+			int fd = ep_events[i].data.fd; 
+			if (fd == serv_sock) {
 				adr_sz = sizeof(clnt_adr);
 				clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_adr, &adr_sz);
 				clnt_list[clnt_sock] = 1;
@@ -76,28 +77,30 @@ int main(int argc, char* argv[]) {
 				printf("connected client : %d\n", clnt_sock);
 			}
 			else {
-				printf("sork anjf wkfahtgoTsi");
-				int fd = ep_events[i].data.fd;
-				read(fd, (char*)&u_len, 1);
-				
+				printf("I don't know why It doesn't work at all!!\n");
+				read(fd, (char*)&u_len, 4);
+				printf("u_len : %d\n", u_len);
 				read_len = 0;
 				read_cnt = 0;
 				while (read_len < u_len) {
-					read_cnt = read(fd, user_name + read_len, u_len - read_len);
+					read_cnt = read(fd, user_name + read_len, 1);
 					if (read_cnt == -1)
 						error_handling("read name error!");
 					read_len += read_cnt;
+					printf("read_cnt : %d\n", read_cnt);
 				}
 
 				if (u_len != read_len)
 					error_handling("total name read error!");
+				user_name[u_len] = '\0';
 
-				read(fd, (char*)&t_len, 1);
-
+				read(fd, (char*)&t_len, 4);
+				printf("%s\n", user_name);
+				printf("t_len : %d\n", t_len);
 				read_len = 0;
 				read_cnt = 0;
 				while (read_len < t_len) {
-					read_cnt = read(fd, message + read_len, t_len - read_len);
+					read_cnt = read(fd, message + read_len, 1);
 					if (read_cnt == -1)
 						error_handling("read text error!");
 					read_len += read_cnt;
@@ -113,7 +116,7 @@ int main(int argc, char* argv[]) {
 					printf("%s > %s \n", user_name, message);
 					write_len = write_to_all(clnt_list, u_len, user_name, t_len, message);
 				}
-				
+				printf("write_len : %d, u_len : %d, t_len : %d\n", write_len, u_len, t_len);	
 				if (write_len != u_len + t_len + 2)
 					error_handling("total write() error!");
 			}
@@ -122,6 +125,9 @@ int main(int argc, char* argv[]) {
 	close(serv_sock);
 	close(epfd);
 	free(ep_events);
+	free(clnt_list);
+	free(user_name);
+	free(message);
 	return 0;
 }
 
@@ -133,14 +139,13 @@ int write_to_all(int* clnt_list, int u_len, char* user_name, int t_len, char* me
 	int write_len, write_cnt;
 
 	for (i = 0; i < MAX_NUM; i++) {
-		total_len = 0;
 		if (clnt_list[i] == 1) {
 			int temp = (char)u_len;
-			total_len += write(i, (char*)&temp, 1);
-
+			total_len = write(i, (char*)&temp, 1);
+			printf("%s user_name , disc : %d\n", user_name, i);	
 			write_len = 0;
 			while (write_len < u_len) {
-				write_cnt = write(i, user_name + write_len, NAME_SIZE);
+				write_cnt = write(i, user_name + write_len, 1);
 				if (write_cnt == -1)
 					error_handling("write() error!");
 				write_len += write_cnt;
@@ -148,15 +153,13 @@ int write_to_all(int* clnt_list, int u_len, char* user_name, int t_len, char* me
 
 			if (write_len != u_len)
 				error_handling("write() name error!");
-
+			printf("u_len : %d, write_len : %d\n", u_len, write_len);
 			total_len += write_len;
-
-			temp = (char)t_len;
-			total_len += write(i, (char*)&temp, 1);
+			total_len += write(i, (char*)&t_len, 4);
 
 			write_len = 0;
 			while (write_len <t_len) {
-				write_cnt = write(i, message + write_len, BUF_SIZE);
+				write_cnt = write(i, message + write_len, 1);
 				if (write_cnt == -1)
 					error_handling("write() error2!");
 				write_len += write_cnt;
@@ -165,6 +168,7 @@ int write_to_all(int* clnt_list, int u_len, char* user_name, int t_len, char* me
 			if (write_len != t_len)
 				error_handling("write() message error!");
 			total_len += write_len;
+			printf("t_len : %d, write_len : %d, total_len : %d\n", t_len, write_len, total_len);
 		}
 	}
 	return total_len;

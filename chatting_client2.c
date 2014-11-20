@@ -15,7 +15,7 @@ void* thread_write(void *arg);
 void* thread_read(void *arg);
 
 int sock;
-char name[BUF_SIZE];
+char* name;
 int name_len;
 
 int main(int argc, char* argv[]) {
@@ -24,6 +24,8 @@ int main(int argc, char* argv[]) {
 
 	pthread_t tid[2];
 	int tret;
+
+	name = (char*)malloc(BUF_SIZE);
 
 	if (argc != 3) {
 		printf("Usage : %s <IP> <port> \n", argv[0]);
@@ -48,6 +50,7 @@ int main(int argc, char* argv[]) {
 	printf("Input your name : ");
 	scanf("%s", name);	
 	name_len = strlen(name);
+	fgetc(stdin);
 
 	tret = pthread_create(&tid[0], 0, thread_write, NULL);
 	if (tret != 0)
@@ -63,6 +66,7 @@ int main(int argc, char* argv[]) {
 			error_handling("join error!");
 	}
 
+	free(name);
 	close(sock);
 	return 0;
 }
@@ -74,11 +78,14 @@ void *thread_read(void *arg) {
 	char user_name[BUF_SIZE];
 	char message[BUF_SIZE];
 
+	memset(user_name, 0, BUF_SIZE);
+	memset(message, 0, BUF_SIZE);
+
 	while (1) {
 		read(sock, (char*)&u_len, 1);
 		read_len = 0;
 		while (read_len < u_len) {
-			read_cnt = read(sock, user_name + read_len, u_len - read_len);
+			read_cnt = read(sock, user_name + read_len, 1);
 			if (read_cnt == -1)
 				error_handling("name read() error!");
 			read_len += read_cnt;
@@ -87,7 +94,7 @@ void *thread_read(void *arg) {
 		read(sock, (char*)&t_len, 1);
 		read_len = 0;
 		while (read_len < t_len) {
-			read_cnt = read(sock, message + read_len, t_len - read_len);
+			read_cnt = read(sock, message + read_len, 1);
 			if (read_cnt == -1)
 				error_handling("message read() error!");
 			read_len += read_cnt;
@@ -104,27 +111,27 @@ void *thread_write(void *arg) {
 	int write_cnt, write_len;
 	
 	while (1) {
-		char temp = (char)name_len;
-		write(sock, &temp, 1);
+		fflush(stdin);
+		write(sock, (char*)&name_len, 4);
 		printf("ME> ");
 		fgets(buf, BUF_SIZE, stdin);
-		t_len = strlen(buf);
+		t_len = (int)strlen(buf);
 		
 		printf("%d, %d\n", name_len, t_len);
-
 		write_len = 0;
+		write_cnt = 0;
 		while (write_len < name_len) {
-			write_cnt = write(sock, name + write_len, name_len - write_len);
+			write_cnt = write(sock, name + write_len, 1);
 			if (write_cnt == -1)
 				error_handling("wirte name error!");
 			write_len += write_cnt;
 		}
-
-		temp = (char)t_len;
-		write(sock, &temp, 1);
+		
+		write(sock, (char*)&t_len, 4);
 		write_len = 0;
+		write_cnt = 0;
 		while (write_len < t_len) {
-			write_cnt = write(sock, buf + write_len, t_len - write_len);
+			write_cnt = write(sock, buf + write_len, 1);
 			if (write_cnt == -1)
 				error_handling("write text error!");
 			write_len += write_cnt;
