@@ -59,8 +59,8 @@ void* request_handler(void *arg) {
 	char ct[15];
 	char file_name[30];
 
-	clnt_read = fdopen(clnt_sock, "r");
-	clnt_write = fdopen(dup(clnt_sock), "w");
+	clnt_read = fdopen(clnt_sock, "rb");
+	clnt_write = fdopen(dup(clnt_sock), "wb");
 
 	fgets(req_line, SMALL_BUF, clnt_read);
 	if (strstr(req_line,"HTTP/") == NULL) {
@@ -70,16 +70,29 @@ void* request_handler(void *arg) {
 		return;
 	}
 
-	strcpy(method, strtok(req_line, " /"));
-	strcpy(file_name, strtok(NULL, " /"));
-	strcpy(ct, content_type(file_name));
+	strcpy(method, strtok(req_line, " "));
 	if (strcmp(method, "GET") != 0) {
 		send_error(clnt_write);
 		fclose(clnt_read);
 		fclose(clnt_write);
 		return;
 	}
-
+	strcpy(file_name, strtok(NULL, " "));
+	memove(file_name+1, file_name, strlen(file_name));
+	file_name[0] = '.';
+	int i;
+	for (i = 0; i < strlen(file_name)+1; i++) {
+		if (file_name[i] == '/';) 
+			file_name[i] == '\\';
+	}
+	char* type = content_type(file_name);
+	if (type == NULL) {
+		send_error(clnt_write);
+		fclose(clnt_read);
+		fclose(clnt_write);
+		return;
+	}
+	strcpy(ct, content_type(file_name));
 	fclose(clnt_read);
 	send_data(clnt_write, ct, file_name);
 
@@ -88,13 +101,13 @@ void* request_handler(void *arg) {
 void send_data(FILE* fp, char* ct, char* file_name) {
 	char protocol[] = "HTTP/1.0 200 OK\r\n";
 	char server[] = "Server:Linux Web Server \r\n";
-	char cnt_len[] = "Content-length:2048\r\n";
+	char cnt_len[] = "Content-length:1024000\r\n";
 	char cnt_type[SMALL_BUF];
 	char buf[BUF_SIZE];
 	FILE* send_file;
 
 	sprintf(cnt_type, "Content-type:%s\r\n\r\n", ct);
-	send_file = fopen(file_name, "r");
+	send_file = fopen(file_name, "rb");
 	if (send_file == NULL) {
 		send_error(fp);
 		return;
@@ -129,7 +142,7 @@ char* content_type(char* file) {
 void send_error(FILE* fp) {
 	char protocol[] = "HTTP/1.0 400 Bad Request\r\n";
 	char server[] = "Server:Linux Web Server \r\n";
-	char cnt_len[] = "Content-length:2048\r\n";
+	char cnt_len[] = "Content-length:1024000\r\n";
 	char cnt_type[] = "Content-type:text/html\r\n\r\n";
 	char content[] = "<html><head><title>NETWORK</title></head>"
 		"<body><font size = +5><br>오류발생! 요청 파일명 및 요청 방식 확인!"
