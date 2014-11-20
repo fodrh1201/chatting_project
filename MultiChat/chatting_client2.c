@@ -115,7 +115,6 @@ void *thread_write(void *arg) {
 	
 	while (1) {
 		fflush(stdin);
-		printf("ME> ");
 		fgets(buf, BUF_SIZE, stdin);
 		t_len = (int)strlen(buf);
 		buf[t_len] = '\0';
