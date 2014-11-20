@@ -1,0 +1,256 @@
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 13px;
+	font-weight: 300;
+	font: inherit;
+	vertical-align: baseline;
+	text-decoration: none;
+	color: black;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+}
+body {
+	line-height: 1.4;
+	font-family: "Roboto",Arial,sans-serif;
+	background-color: rgb(200, 200, 200);
+	height: 100%;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+header {
+	height: 48px;
+	background: #fff;
+	border-bottom: 1px solid #aaa;
+	position: relative;
+	width: 100%;
+}
+
+header > .Icon {
+	width: 24px;
+	height: 24px;
+	background-size: contain;
+	position: absolute;
+}
+
+header > #List {
+	top: 11px;
+	left: 11px;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAV0lEQVRIx+3VQQ0AIAwEwWo5Jfg3VUwQQsM0WQHz6VV31+QKAAAAAAAAAOAwIMlK0i8FAADwE+DFAwC4CfCFAAAALLEhA7DE3igAwL+ASQEAAAAAAIxuAySZPrhcy+LMAAAAAElFTkSuQmCC);
+}
+
+header > .Subject {
+	display: block;
+	width: 160px;
+	height: 40px;	background-image: url(https://ssl.gstatic.com/android/market_images/web/logo_m_play.png);
+	background-size: contain;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 5px;
+}
+
+header > #Find {
+	top: 11px;
+	right: 11px;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABSElEQVRYw+3Z0Q2DIBAGYEdwhOafwBEcwREYwRG6gSN0BEfoCIzgCIxAX3hoiCeCgIc5k3syNffBHYLtrLVdy9EJQAACeDAgdAHoASgAKwADwHph3D3VZbiyAgC8iaSpMADm2wEABgA6InE/NIDXLQCXvLmQ/P9sDFUBgeQ3V1KjF4u7RyFeNQGaSEKdaPaZwOsqADe6e7V8ugwOZlAVBbil0uSoYQKxlQaoK6NGlFPS81IBa+qIHSD8xv6UBPhTPmcALCmDEg1w9e9P95gBMPnPLQUYdwB9BsAogIgeaLeEmm/ipyyjNV5kk2wlHruZK7yd/rZ8oIlekjkdKW21VajQoX5OQbD5rEJsUYIINh+23O90LCI74OLbOBrBCpCCYAeIRbAExCDYAs4iWAPOINgDAog2AASijRIiEOlNLH/yCUAAAhBAKH4d6lEJvw9suwAAAABJRU5ErkJggg==);
+}
+
+nav {
+	margin-top: 15px;
+	text-align: center;
+	width: 100%;
+	display: block;
+}
+
+nav > ul {
+	display: inline-block;
+	text-align: left;
+	height: 92px;
+}
+
+nav > ul > li {
+	display: inline-block;
+}
+
+nav a {
+	display: inline-block;
+	text-decoration: none;
+	color: black;
+	margin: 5px;
+	border: 1px solid rgba(0,0,0,0.17);
+	border-radius: 2px;
+	box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+	font-size: 14px;
+	font-family: "Roboto",sans-serif;
+	height: 36px;
+	width: 30px;
+	line-height: 36px;
+	padding: 0 20px;
+	text-align: center;
+	vertical-align: middle;
+	min-width: 148px;
+	background-color: rgb(255,255,255);
+	box-sizing: border-box;
+}
+
+section > .COntainer {
+	margin-top: 20px;
+}
+
+.CardHeader {
+	color: black;
+	font-size: 24px;
+	line-height: 28px;
+	text-align: left;
+	padding: 5px;
+	display: block;
+	position: relative;
+}
+
+.Text {
+	display: block;
+	position: relative;
+}
+
+.Text a {
+	height: 58px;
+}
+
+.subHead {
+	font-size: 13px;
+}
+
+.Morebutton {
+	position: absolute;
+	right: 5px;
+	bottom: 10px;
+	width: 42px;
+	height: 30px;
+	font-size: 14px;
+	text-align: center;
+	background-color: rgb(26,161,225);
+	color: white;
+	border-radius: 2px;
+	padding: 0 13px;
+}
+
+.CardList {
+	display: inline-block;
+}
+
+.card {
+	margin: 5px;
+	width: 148;
+	height: 290;
+	display: inline-block;
+	text-align: left;
+	position: relative;
+}
+
+.card > a {
+	width: 148;
+	height: 290;
+	font-family: "Roboto", Arial, sans-serif;
+	font-size: 13px;
+	font-weight: 300;
+	line-height: 1.4;
+	display: block;
+}
+
+.Background {
+	width: 148;
+	height: 225;
+	display: table-cell;
+	vertical-align: middle;
+	background-color: rgb(235,235,235);
+}
+
+.Picture > img {
+	max-width: 148;
+	max-height: 225;
+	display: block;
+	margin: auto 0px;
+}
+
+.BookInform {
+	height: 75px;
+	width: 148px;
+	background-color: white;
+	box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+	border-radius: 2px;
+}
+
+.book-name {
+	color: rgb(51,51,51);
+	padding: 7px 10px 0px 10px;
+	width: 128px;
+	height: 18px;
+	display: block;
+	background-color: rgb(255,255,255);
+	overflow: hidden;
+}
+.end-gradient {
+	width: 45px;
+	height: 19px;
+	position: absolute;
+	right: 0px;
+	bottom: 43px;
+	background: linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,1));
+}
+
+.author {
+	width: 142px;
+	height: 20px;
+	background-color: rgb(255,255,255);
+	padding: 1px 10px;
+	color: rgb(170,170,170);
+	font-size: 13px;
+}
+
+.price {
+	color: rgb(26,161,225);
+	font-size: 13px;
+	line-height: 17px;
+	position: absolute;
+	right: 10px;
+	bottom: 3px;
+}
+
+footer {
+	padding: 15px 0;
+	height: 40px;
+	width: 100%;
+}
+
+
