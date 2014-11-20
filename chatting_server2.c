@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
 						error_handling("read text error!");
 					read_len += read_cnt;
 				}
-
+				message[read_len] = '\0';
 				if (!strcmp(message, "exit\n")) {
 					epoll_ctl(epfd, EPOLL_CTL_DEL, ep_events[i].data.fd, NULL);
 					clnt_list[ep_events[i].data.fd] = 0;
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 					printf("closed client : %d\n", ep_events[i].data.fd);
 				}
 				else {
-					printf("%s > %s \n", user_name, message);
+					printf("%s > %s", user_name, message);
 					write_len = write_to_all(clnt_list, u_len, user_name, t_len, message);
 				}
 				if (write_len != u_len + t_len + 5)

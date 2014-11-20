@@ -90,6 +90,7 @@ void *thread_read(void *arg) {
 				error_handling("name read() error!");
 			read_len += read_cnt;
 		}
+		user_name[u_len] = '\0';
 
 		read(sock, (char*)&t_len, 4);
 		read_len = 0;
@@ -99,7 +100,9 @@ void *thread_read(void *arg) {
 				error_handling("message read() error!");
 			read_len += read_cnt;
 		}
-		printf("%s > %s\n", user_name, message);
+		message[read_len] = '\0';
+
+		printf("%s > %s", user_name, message);
 	}
 	pthread_exit((void*) NULL);
 }
@@ -112,11 +115,12 @@ void *thread_write(void *arg) {
 	
 	while (1) {
 		fflush(stdin);
-		write(sock, (char*)&name_len, 4);
 		printf("ME> ");
 		fgets(buf, BUF_SIZE, stdin);
 		t_len = (int)strlen(buf);
-		
+		buf[t_len] = '\0';
+
+		write(sock, (char*)&name_len, 4);
 		write_len = 0;
 		write_cnt = 0;
 		while (write_len < name_len) {
