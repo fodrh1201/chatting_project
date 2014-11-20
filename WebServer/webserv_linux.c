@@ -6,8 +6,8 @@
 #include <sys/socket.h>
 #include <pthread.h>
 
-#define BUF_SIZE	102400
-#define SMALL_BUF	100
+#define BUF_SIZE	1024000
+#define SMALL_BUF	1024000
 
 void* request_handler(void* arg);
 void send_data(FILE* fp, char* ct, char* file_name);
@@ -87,13 +87,13 @@ void* request_handler(void *arg) {
 
 void send_data(FILE* fp, char* ct, char* file_name) {
 	char protocol[] = "HTTP/1.0 200 OK\r\n";
-	char server[] = "Server : Linux Web Server \r\n";
+	char server[] = "Server:Linux Web Server \r\n";
 	char cnt_len[] = "Content-length:2048\r\n";
 	char cnt_type[SMALL_BUF];
 	char buf[BUF_SIZE];
 	FILE* send_file;
 
-	sprintf(cnt_type, "Content-type:%sr\n\r\n", ct);
+	sprintf(cnt_type, "Content-type:%s\r\n\r\n", ct);
 	send_file = fopen(file_name, "r");
 	if (send_file == NULL) {
 		send_error(fp);
